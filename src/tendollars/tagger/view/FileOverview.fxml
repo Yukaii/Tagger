@@ -27,7 +27,7 @@
                         <Insets right="5.0" />
                      </HBox.margin>
                   </TextField>
-                  <Button fx:id="searchBtn" mnemonicParsing="false" text="Search" onAction="#searchFile" />
+                  <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#searchFile" text="Search" />
                </children>
                <padding>
                   <Insets left="10.0" top="10.0" />
@@ -44,11 +44,14 @@
                   <Insets />
                </GridPane.margin>
             </TableView>
-            <MenuButton mnemonicParsing="false" text="Admin" GridPane.columnIndex="1">
+            <MenuButton mnemonicParsing="false" text="Admin Menu" GridPane.columnIndex="1">
               <items>
                 <MenuItem mnemonicParsing="false" text="Artist" />
                 <MenuItem mnemonicParsing="false" onAction="#openDirectory" text="Open Directory" />
               </items>
+               <GridPane.margin>
+                  <Insets left="27.0" />
+               </GridPane.margin>
             </MenuButton>
             <VBox fx:id="tagBox" prefHeight="355.0" prefWidth="169.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <padding>
