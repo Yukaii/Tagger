@@ -5,6 +5,7 @@ import com.sun.deploy.util.FXLoader;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -16,12 +17,17 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import tendollars.tagger.db.DaoManager;
 import tendollars.tagger.db.FileDao;
 import tendollars.tagger.db.UserDao;
+import sun.rmi.runtime.Log;
 import tendollars.tagger.model.FileInfo;
 import tendollars.tagger.utils.TagUtil;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.beans.EventHandler;
 import java.io.IOException;
 import java.io.File;
 import java.util.Collection;
+import java.util.EventListener;
 
 /**
  * Created by yukai on 2015/1/14.
@@ -33,19 +39,34 @@ public class MainApp extends Application {
     private ObservableList<FileInfo> fileInfos = FXCollections.observableArrayList();
     private File lastAccess;
 
+    LoginViewController loginViewController;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primarySage = primaryStage;
         this.primarySage.setTitle("Tagger");
 
+        showLoginView();
         this.lastAccess = new File(System.getProperty("user.home"), "Desktop");
         Collection<File> files = TagUtil.scanFile(this.lastAccess);
         for (File file : files) {
             fileInfos.add(new FileInfo(file));
         }
         DaoManager.saveFiles(files);
+
         showFileOverview();
+        this.primarySage.hide();
+
+        this.primarySage.setOnCloseRequest(new javafx.event.EventHandler<javafx.stage.WindowEvent>() {
+            @Override
+            public void handle(javafx.stage.WindowEvent event) {
+                primaryStage.hide();
+                showLoginView();
+            }
+        });
+
+
+
     }
 
 
@@ -62,10 +83,36 @@ public class MainApp extends Application {
 
             Scene scene = new Scene(fileOverview);
             primarySage.setScene(scene);
+            primarySage.setResizable(false);
             primarySage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    public void showLoginView() {
+        try {
+            Stage sa = new Stage();
+            sa.setTitle("Login");
+            FXMLLoader l = new FXMLLoader();
+            l.setLocation(MainApp.class.getResource("view/login.fxml"));
+            AnchorPane login = (AnchorPane) l.load();
+
+            // add controller
+            this.loginViewController = l.getController();
+            this.loginViewController.setMainApp(this);
+            this.loginViewController.setPrimaryStage(this.primarySage);
+            //
+
+            Scene s = new Scene(login);
+            sa.setResizable(false);
+            sa.setScene(s);
+            sa.show();
+
+        } catch (IOException ee) {
+            ee.printStackTrace();
         }
     }
 
