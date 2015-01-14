@@ -1,4 +1,4 @@
-#Tagger - ntust software engineering class final project
+#Tagger - ntust software engineering course final project
 
 ##Requirements
 JDK 8
