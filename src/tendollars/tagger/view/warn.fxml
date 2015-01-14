@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<Pane maxHeight="243.0" maxWidth="324.0" minHeight="243.0" minWidth="324.0" fx:controller="tendollars.tagger.WarnViewController" prefHeight="243.0" prefWidth="324.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView fitHeight="102.0" fitWidth="121.0" layoutX="102.0" layoutY="14.0">
+         <image>
+            <Image url="@1195442352382851478zeimusu_Warning_sign.svg.hi.png" />
+         </image>
+      </ImageView>
+      <Label layoutX="58.0" layoutY="140.0" text="No such user or passward wrong!" />
+      <Button fx:id="confirm" layoutX="106.0" layoutY="170.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="114.0" text="OK!" />
+   </children>
+</Pane>
