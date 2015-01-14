@@ -19,43 +19,52 @@ import java.util.Arrays;
 @DatabaseTable(tableName = "files")
 public class FileInfo {
 
+    public final static String ID_FIELD_NAME = "id";
+    public final static String NAME_FIELD_NAME = "name";
+    public final static String PATH_FIELD_NAME = "path";
+    public final static String EXT_FIELD_NAME = "extension";
+    public final static String TAG_FIELD_NAME = "tag";
+    public final static String STATUS_FIELD_NAME = "status";
+
     private IntegerProperty id;
-    @DatabaseField(columnName = "inv_id", generatedId = true)
+    @DatabaseField(columnName = ID_FIELD_NAME, generatedId = true)
     private int _id ;
 
     private StringProperty _name;
-    @DatabaseField(columnName = "name", dataType = DataType.STRING, useGetSet = true)
+    @DatabaseField(columnName = NAME_FIELD_NAME, dataType = DataType.STRING)
     private String name;
 
     private StringProperty _path;
 
-    @DatabaseField(columnName = "path", dataType = DataType.STRING, useGetSet = true, unique = true)
+    @DatabaseField(columnName = PATH_FIELD_NAME, dataType = DataType.STRING, unique = true)
     private String path;
 
-
     private StringProperty _extension;
-    @DatabaseField(columnName = "extension", dataType = DataType.STRING, useGetSet = true)
+    @DatabaseField(columnName = EXT_FIELD_NAME, dataType = DataType.STRING)
     private String extension;
+
+    private StringProperty _status;
+    @DatabaseField(columnName = STATUS_FIELD_NAME, dataType = DataType.STRING)
+    private String status;
 
     // raw tag strings, eg. "hello world"
     private StringProperty _tag;
     // splitted tags, ["hello", "world"]
     private ArrayList<String> tags;
 
-    @DatabaseField(columnName = "tag", dataType = DataType.STRING, useGetSet = true)
+    @DatabaseField(columnName = TAG_FIELD_NAME, dataType = DataType.STRING)
     private String tag;
 
-
     public FileInfo() {
-        this(null);
+
     }
 
     public FileInfo(File file) {
-        this._name = new SimpleStringProperty(file.getName());
-        this._path = new SimpleStringProperty(file.getAbsolutePath());
-        this._tag = new SimpleStringProperty("");
-        this._extension = new SimpleStringProperty(FilenameUtils.getExtension(file.getAbsolutePath()));
-        this.tags = new ArrayList<String>();
+        this.name = file.getName();
+        this.path = file.getAbsolutePath();
+        this.tag = "";
+        this.status = "new";
+        this.extension = FilenameUtils.getExtension(file.getAbsolutePath());
     }
 
     public int getId() {
@@ -180,7 +189,35 @@ public class FileInfo {
     }
 
     public ArrayList<String> getTags() {
+        if (this.tags == null) {
+            this.setTag(this.tag);
+        }
         return tags;
+    }
+
+
+    public String getStatus() {
+        if (_status == null) {
+            return status;
+        }
+        else {
+            return this._status.get();
+        }
+    }
+
+    public void setStatus(String status) {
+        if (this._status == null) {
+            status = status;
+        } else {
+            this._status.set(status);
+        }
+    }
+
+    public StringProperty statusProperty() {
+        if (this._status == null) {
+            _status = new SimpleStringProperty(this, "status", status);
+        }
+        return _status;
     }
 
 }

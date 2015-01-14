@@ -22,6 +22,7 @@ import tendollars.tagger.utils.TagUtil;
 
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -58,6 +59,7 @@ public class FileOverviewController {
         pathColumn.setCellValueFactory(cellData -> cellData.getValue().pathProperty());
         tagColumn.setCellValueFactory(cellData -> cellData.getValue().tagProperty());
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
 
         fileInfoTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showFileTags(newValue)
@@ -78,8 +80,14 @@ public class FileOverviewController {
 
                     if (response.isPresent()) {
                         String tag = response.get();
+                        if (!f.getTag().equals(tag)) f.setStatus("modified");
                         f.setTag(tag);
 
+                        try {
+                            DaoManager.saveFileInfo(f);
+                        }catch (SQLException e) {
+
+                        }
                         showFileTags(f);
                     }
                 }

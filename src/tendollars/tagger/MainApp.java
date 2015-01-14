@@ -26,6 +26,8 @@ import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
 import java.io.IOException;
 import java.io.File;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EventListener;
 
@@ -47,12 +49,7 @@ public class MainApp extends Application {
         this.primarySage.setTitle("Tagger");
 
         showLoginView();
-        this.lastAccess = new File(System.getProperty("user.home"), "Desktop");
-        Collection<File> files = TagUtil.scanFile(this.lastAccess);
-        for (File file : files) {
-            fileInfos.add(new FileInfo(file));
-        }
-        DaoManager.saveFiles(files);
+        firstLoadFiles();
 
         showFileOverview();
         this.primarySage.hide();
@@ -64,8 +61,21 @@ public class MainApp extends Application {
                 showLoginView();
             }
         });
+    }
+    public void firstLoadFiles() {
+        this.lastAccess = new File(System.getProperty("user.home"), "Desktop");
+        Collection<File> files = TagUtil.scanFile(this.lastAccess);
+        ArrayList<FileInfo> filelist = new ArrayList<FileInfo>();
 
-
+        for (File file : files) {
+            filelist.add(new FileInfo(file));
+        }
+        try {
+            fileInfos = DaoManager.loadFiles(filelist);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
