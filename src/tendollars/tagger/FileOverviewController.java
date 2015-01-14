@@ -16,6 +16,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.controlsfx.dialog.DialogStyle;
 import org.controlsfx.dialog.Dialogs;
+import tendollars.tagger.db.DaoManager;
 import tendollars.tagger.model.FileInfo;
 import tendollars.tagger.utils.TagUtil;
 
@@ -114,6 +115,7 @@ public class FileOverviewController {
         this.mainApp = mainApp;
 
         fileInfoTable.setItems(mainApp.getFileInfos());
+
     }
 
     public void setPrimaryStage(Stage stage) {

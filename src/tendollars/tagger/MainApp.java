@@ -1,5 +1,6 @@
 package tendollars.tagger;
 
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.sun.deploy.util.FXLoader;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -12,6 +13,9 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import tendollars.tagger.db.DaoManager;
+import tendollars.tagger.db.FileDao;
+import tendollars.tagger.db.UserDao;
 import tendollars.tagger.model.FileInfo;
 import tendollars.tagger.utils.TagUtil;
 
@@ -35,10 +39,12 @@ public class MainApp extends Application {
         this.primarySage = primaryStage;
         this.primarySage.setTitle("Tagger");
 
-        this.lastAccess = new File("/Users/");
-        for (File file : TagUtil.scanFile(this.lastAccess)) {
+        this.lastAccess = new File(System.getProperty("user.home"), "Desktop");
+        Collection<File> files = TagUtil.scanFile(this.lastAccess);
+        for (File file : files) {
             fileInfos.add(new FileInfo(file));
         }
+        DaoManager.saveFiles(files);
         showFileOverview();
     }
 

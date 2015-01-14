@@ -1,12 +1,13 @@
 package tendollars.tagger.model;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import javafx.beans.property.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import javax.persistence.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,16 +15,35 @@ import java.util.Arrays;
 /**
  * Created by yukai on 2015/1/14.
  */
+
+@DatabaseTable(tableName = "files")
 public class FileInfo {
-    private final StringProperty name;
-    private final StringProperty path;
-    private final StringProperty extension;
+
+    private IntegerProperty id;
+    @DatabaseField(columnName = "inv_id", generatedId = true)
+    private int _id ;
+
+    private StringProperty _name;
+    @DatabaseField(columnName = "name", dataType = DataType.STRING, useGetSet = true)
+    private String name;
+
+    private StringProperty _path;
+
+    @DatabaseField(columnName = "path", dataType = DataType.STRING, useGetSet = true, unique = true)
+    private String path;
+
+
+    private StringProperty _extension;
+    @DatabaseField(columnName = "extension", dataType = DataType.STRING, useGetSet = true)
+    private String extension;
 
     // raw tag strings, eg. "hello world"
-    private final StringProperty tag;
-
+    private StringProperty _tag;
     // splitted tags, ["hello", "world"]
-    ArrayList<String> tags;
+    private ArrayList<String> tags;
+
+    @DatabaseField(columnName = "tag", dataType = DataType.STRING, useGetSet = true)
+    private String tag;
 
 
     public FileInfo() {
@@ -31,64 +51,136 @@ public class FileInfo {
     }
 
     public FileInfo(File file) {
-        this.name = new SimpleStringProperty(file.getName());
-        this.path = new SimpleStringProperty(file.getAbsolutePath());
-        this.tag = new SimpleStringProperty("");
-        this.extension = new SimpleStringProperty(FilenameUtils.getExtension(file.getAbsolutePath()));
+        this._name = new SimpleStringProperty(file.getName());
+        this._path = new SimpleStringProperty(file.getAbsolutePath());
+        this._tag = new SimpleStringProperty("");
+        this._extension = new SimpleStringProperty(FilenameUtils.getExtension(file.getAbsolutePath()));
         this.tags = new ArrayList<String>();
     }
 
-    public void setName(String name) {
-        this.name.set(name);
+    public int getId() {
+        if (id==null) {
+            return _id ;
+        } else {
+            return id.get();
+        }
+    }
+    public void setId(int id) {
+        if (this.id==null) {
+            _id=id ;
+        } else {
+            this.id.set(id);
+        }
     }
 
-    public void setPath(String path) {
-        this.path.set(path);
-    }
-
-    public void setExtension(String extension) {
-        this.extension.set(extension);
+    public IntegerProperty idProperty() {
+        if (id==null) {
+            id = new SimpleIntegerProperty(this, "id", _id);
+        }
+        return id ;
     }
 
     public String getName() {
-        return name.get();
+        if (_name == null) {
+            return name;
+        }
+        else {
+            return _name.get();
+        }
+    }
+
+    public void setName(String name) {
+        if (this._name == null) {
+            name = name;
+        } else {
+            this._name.set(name);
+        }
     }
 
     public StringProperty nameProperty() {
-        return name;
+        if (this._name == null) {
+            _name = new SimpleStringProperty(this, "name", name);
+        }
+        return _name;
     }
 
+
     public String getPath() {
-        return path.get();
+        if (_path == null) {
+            return path;
+        }
+        else {
+            return _path.get();
+        }
+    }
+
+    public void setPath(String path) {
+        if (this._path == null) {
+            path = path;
+        } else {
+            this._path.set(path);
+        }
     }
 
     public StringProperty pathProperty() {
-        return path;
+        if (this._path == null) {
+            this._path = new SimpleStringProperty(this, "path", path);
+        }
+        return _path;
     }
 
+
     public String getExtension() {
-        return extension.get();
+        if (_extension == null) {
+            return extension;
+        }
+        else {
+            return this._extension.get();
+        }
+    }
+
+    public void setExtension(String extension) {
+        if (this._extension == null) {
+            extension = extension;
+        } else {
+            this._extension.set(extension);
+        }
+    }
+
+    public StringProperty extensionProperty() {
+        if (this._extension == null) {
+            _extension = new SimpleStringProperty(this, "extension", extension);
+        }
+        return _extension;
+    }
+
+    public String getTag() {
+        if (_tag == null) {
+            return tag;
+        }
+        else {
+            return _tag.get();
+        }
+    }
+
+    public void setTag(String tag) {
+        tags = new ArrayList<String>(Arrays.asList(tag.split("\\s+")));
+        if (this._tag == null) {
+            tag = tag;
+        } else {
+            this._tag.set(tag);
+        }
+    }
+
+    public StringProperty tagProperty() {
+        if (this._tag == null) {
+            this._tag = new SimpleStringProperty(this, "tag", tag);
+        }
+        return _tag;
     }
 
     public ArrayList<String> getTags() {
         return tags;
     }
 
-    public void setTag(String tag) {
-        tags = new ArrayList<String>(Arrays.asList(tag.split("\\s+")));
-        this.tag.set(tag);
-    }
-
-    public String getTag() {
-
-        return tag.get();
-    }
-
-    public StringProperty tagProperty() {
-        return tag;
-    }
-
-    public StringProperty extensionProperty() {
-        return extension;
-    }
 }
