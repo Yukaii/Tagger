@@ -23,21 +23,6 @@ import java.util.List;
  */
 public class DaoManager extends com.j256.ormlite.dao.DaoManager {
 
-    public void DaoManager(){
-
-//        connectionSource = new JdbcPooledConnectionSource("jdbc:sqlite:test.db");
-//        try {
-//            this.connectionSource.setMaxConnectionAgeMillis(5 * 60* 1000);
-//            this.connectionSource.setCheckConnectionsEveryMillis(60 * 1000);
-//            this.connectionSource.setTestBeforeGet(true);
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }finally {
-//            this.connectionSource.close();
-//        }
-    }
-
     public static void saveFiles(Collection<File> fs) throws SQLException{
         JdbcPooledConnectionSource connectionSource =
                 new JdbcPooledConnectionSource("jdbc:sqlite:test.db");
@@ -48,17 +33,7 @@ public class DaoManager extends com.j256.ormlite.dao.DaoManager {
             e.printStackTrace();
         }
         FileDao fileDao = new FileDao(connectionSource);
-//        QueryBuilder<FileInfo, Integer> queryBuilder = fileDao.queryBuilder();
-//        Where<FileInfo, Integer> where = queryBuilder.where();
-//        System.out.println(where.eq("path", f.getPath()).prepare());
-        for (File f : fs) {
-            try {
-                fileDao.create(new FileInfo(f));
-            }catch (SQLException e) {
-                // File path already exist :p
-                e.printStackTrace();
-            }
-        }
+        fileDao.createFromFileList(fs);
         connectionSource.close();
     }
 
