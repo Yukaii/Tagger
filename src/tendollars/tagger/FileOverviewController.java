@@ -4,6 +4,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -41,18 +42,18 @@ public class FileOverviewController {
     private TableColumn<FileInfo, String> statusColumn;
     @FXML
     private TableColumn<FileInfo, String> nameColumn;
-
-
     @FXML
     private TextField searchField;
-
     @FXML
     private VBox tagBox;
 
     private MainApp mainApp;
     private Stage primaryStage;
 
+    private ObservableList<FileInfo> currentDirectoryFiles;
+
     public FileOverviewController() {}
+
 
     @FXML
     private void initialize() {
@@ -95,11 +96,33 @@ public class FileOverviewController {
 
             }
         });
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            searchBy(newValue);
+        });
     }
 
-    @FXML
-    private void searchFile() {
-        System.out.println("hit search button");
+    private void searchBy(String searchString) {
+        ObservableList<FileInfo> searchResult = FXCollections.observableArrayList();
+
+        if (searchString.equals("") || searchString.equals(" ")) {
+            fileInfoTable.setItems(currentDirectoryFiles);
+            return;
+        }
+
+        ArrayList<String> searchTags = TagUtil.uniqueArray(searchString);
+
+        for (FileInfo f : currentDirectoryFiles) {
+            for (String tag: searchTags) {
+                if (f.getTag().contains(tag)) {
+                    searchResult.add(f);
+                }
+            }
+//            if (f.getTags().containsAll(searchTags)) {
+//                searchResult.add(f);
+//            }
+        }
+        fileInfoTable.setItems(TagUtil.uniqueFileInfos(searchResult));
     }
 
     private void showFileTags(FileInfo f) {
@@ -112,8 +135,22 @@ public class FileOverviewController {
 
         tagBox.getChildren().add(new Label(tags.size() + " tags"));
 
+
         for (String t : tags) {
-            tagBox.getChildren().add(new Button(t));
+            Button tagbtn = new Button(t);
+            tagbtn.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    StringBuilder strbuilder = new StringBuilder();
+//                    if (searchField.getText().equals("")) {
+//
+//                    }
+                    strbuilder.append(searchField.getText());
+                    strbuilder.append(tagbtn.getText()).append(" ");
+                    searchField.setText(strbuilder.toString());
+                }
+            });
+            tagBox.getChildren().add(tagbtn);
         }
 
         tagBox.setSpacing(7);
@@ -122,7 +159,9 @@ public class FileOverviewController {
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
 
-        fileInfoTable.setItems(mainApp.getFileInfos());
+        currentDirectoryFiles = mainApp.getFileInfos();
+        fileInfoTable.setItems(currentDirectoryFiles);
+        fileInfoTable.setPlaceholder(new Label("沒有結果"));
 
     }
 
@@ -151,5 +190,10 @@ public class FileOverviewController {
             fileInfoTable.setItems(fileInfos);
         }
 
+    }
+
+    @FXML
+    private void clearText() {
+        searchField.setText("");
     }
 }

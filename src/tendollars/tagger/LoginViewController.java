@@ -62,7 +62,7 @@ public class LoginViewController {
             @Override
             public void handle(MouseEvent event) {
                 if (event.getClickCount() != 0)
-                    if (username.getText().toString().equals("hello") && password.getText().equals("ya"))
+                    if (username.getText().toString().equals("hello") && password.getText().equals(""))
                     {
                         islog = true;
                         Stage s = (Stage) loginButton.getScene().getWindow();

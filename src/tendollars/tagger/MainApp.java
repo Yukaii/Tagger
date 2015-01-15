@@ -61,6 +61,7 @@ public class MainApp extends Application {
                 showLoginView();
             }
         });
+
     }
     public void firstLoadFiles() {
         this.lastAccess = new File(System.getProperty("user.home"), "Desktop");

@@ -5,12 +5,12 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="500.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tendollars.tagger.FileOverviewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="500.0" prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tendollars.tagger.FileOverviewController">
    <children>
       <GridPane fx:id="gridPane" alignment="CENTER" layoutX="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="-8.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="492.0" minWidth="10.0" prefWidth="432.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="296.0" minWidth="10.0" prefWidth="168.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="677.0" minWidth="10.0" prefWidth="535.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="296.0" minWidth="10.0" prefWidth="165.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="129.0" minHeight="3.0" prefHeight="45.0" vgrow="SOMETIMES" />
@@ -27,7 +27,11 @@
                         <Insets right="5.0" />
                      </HBox.margin>
                   </TextField>
-                  <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#searchFile" text="Search" />
+                  <Button mnemonicParsing="false" onAction="#clearText" text="clear">
+                     <HBox.margin>
+                        <Insets right="8.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
                <padding>
                   <Insets left="10.0" top="10.0" />
@@ -35,10 +39,10 @@
             </HBox>
             <TableView fx:id="fileInfoTable" prefHeight="355.0" prefWidth="432.0" GridPane.rowIndex="1">
               <columns>
-                  <TableColumn fx:id="nameColumn" prefWidth="113.0" text="Name" />
-                <TableColumn fx:id="tagColumn" minWidth="0.0" prefWidth="123.0" text="Tags" />
-                <TableColumn fx:id="pathColumn" editable="false" prefWidth="106.0" text="Path" />
-                  <TableColumn fx:id="statusColumn" minWidth="0.0" prefWidth="89.0" text="Status" />
+                  <TableColumn fx:id="nameColumn" prefWidth="143.0" text="Name" />
+                <TableColumn fx:id="tagColumn" minWidth="0.0" prefWidth="83.0" text="Tags" />
+                <TableColumn fx:id="pathColumn" editable="false" prefWidth="235.0" text="Path" />
+                  <TableColumn fx:id="statusColumn" minWidth="0.0" prefWidth="73.0" text="Status" />
               </columns>
                <GridPane.margin>
                   <Insets />

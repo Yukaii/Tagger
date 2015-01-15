@@ -6,11 +6,13 @@ import com.j256.ormlite.table.DatabaseTable;
 import javafx.beans.property.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import tendollars.tagger.utils.TagUtil;
 
 import javax.persistence.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * Created by yukai on 2015/1/14.
@@ -173,7 +175,7 @@ public class FileInfo {
     }
 
     public void setTag(String tag) {
-        tags = new ArrayList<String>(Arrays.asList(tag.split("\\s+")));
+        tags = TagUtil.uniqueArray(tag);
         if (this._tag == null) {
             tag = tag;
         } else {
