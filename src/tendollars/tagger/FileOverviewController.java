@@ -7,11 +7,14 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -46,13 +49,18 @@ public class FileOverviewController {
     private TextField searchField;
     @FXML
     private VBox tagBox;
+    @FXML
+    private MenuButton actionMenu;
 
     private MainApp mainApp;
     private Stage primaryStage;
 
     private ObservableList<FileInfo> currentDirectoryFiles;
 
-    public FileOverviewController() {}
+    boolean editable;
+
+    public FileOverviewController() {
+    }
 
 
     @FXML
@@ -70,27 +78,29 @@ public class FileOverviewController {
         fileInfoTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                FileInfo f = fileInfoTable.getSelectionModel().getSelectedItem();
-                // doubld click!
-                if (event.getClickCount() > 1) {
+                if (editable == true) {
+                    FileInfo f = fileInfoTable.getSelectionModel().getSelectedItem();
+                    // doubld click!
+                    if (event.getClickCount() > 1) {
 
-                    Optional<String> response = Dialogs.create()
-                             .title("Edit Tag")
-                             .masthead("Split by spaces For example: hello world")
-                             .style(DialogStyle.NATIVE)
-                             .showTextInput(f.getTag());
+                        Optional<String> response = Dialogs.create()
+                                .title("Edit Tag")
+                                .masthead("Split by spaces For example: hello world")
+                                .style(DialogStyle.NATIVE)
+                                .showTextInput(f.getTag());
 
-                    if (response.isPresent()) {
-                        String tag = response.get();
-                        if (!f.getTag().equals(tag)) f.setStatus("modified");
-                        f.setTag(tag);
+                        if (response.isPresent()) {
+                            String tag = response.get();
+                            if (!f.getTag().equals(tag)) f.setStatus("modified");
+                            f.setTag(tag);
 
-                        try {
-                            DaoManager.saveFileInfo(f);
-                        }catch (SQLException e) {
+                            try {
+                                DaoManager.saveFileInfo(f);
+                            } catch (SQLException e) {
 
+                            }
+                            showFileTags(f);
                         }
-                        showFileTags(f);
                     }
                 }
 
@@ -117,15 +127,60 @@ public class FileOverviewController {
 
         for (FileInfo f : currentDirectoryFiles) {
             for (String tag: searchTags) {
-                if (f.getTag().contains(tag)) {
+                if (f.getTag().toLowerCase().contains(tag.toLowerCase())) {
                     searchResult.add(f);
                 }
             }
-//            if (f.getTags().containsAll(searchTags)) {
-//                searchResult.add(f);
-//            }
+
         }
         fileInfoTable.setItems(TagUtil.uniqueFileInfos(searchResult));
+    }
+    /*
+       終極防呆，覺得小確幸
+     */
+    @FXML
+    private void resetDatabase() throws SQLException{
+        if (!editable) {
+            Alert alert1 = new Alert(Alert.AlertType.ERROR);
+            alert1.setTitle("Privilege not Allowed");
+            alert1.setHeaderText(null);
+            alert1.setContentText("You can't do this, NONONO");
+            alert1.showAndWait();
+            return;
+        }
+
+        Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION);
+        alert1.setTitle("Delete Confirmation");
+        alert1.setHeaderText(null);
+        alert1.setContentText("Do you want to delete tags?");
+        Optional<ButtonType> result = alert1.showAndWait();
+
+        if (result.get() == ButtonType.OK) {
+            Alert alert2 = new Alert(Alert.AlertType.CONFIRMATION);
+            alert2.setTitle("Delete Confirmation");
+            alert2.setHeaderText(null);
+            alert2.setContentText("Do you really want to delete tags?");
+            result = alert2.showAndWait();
+
+            if (result.get() == ButtonType.OK) {
+                Alert alert3 = new Alert(Alert.AlertType.CONFIRMATION);
+                alert3.setTitle("Delete Confirmation");
+                alert3.setHeaderText(null);
+                alert3.setContentText("Do you really really really reallllllly want to delete those f**king tags?");
+                result = alert3.showAndWait();
+
+                if (result.get() == ButtonType.OK) {
+                    DaoManager.resetDatabase();
+                    fileInfoTable.setItems(TagUtil.openDirectory(mainApp, true));
+
+                    Alert alert4 = new Alert(Alert.AlertType.INFORMATION);
+                    alert4.setTitle("Delete Done!");
+                    alert4.setHeaderText(null);
+                    alert4.setContentText("...........好吧你贏了，好棒棒");
+                    alert4.show();
+                }
+            }
+        }
     }
 
     private void showFileTags(FileInfo f) {
@@ -155,25 +210,23 @@ public class FileOverviewController {
         tagBox.setSpacing(7);
     }
 
+
+
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
-
-        currentDirectoryFiles = mainApp.getFileInfos();
-        fileInfoTable.setItems(currentDirectoryFiles);
     }
 
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
     }
 
-
+    public void setTableItems() {
+        currentDirectoryFiles = mainApp.getFileInfos();
+        fileInfoTable.setItems(currentDirectoryFiles);
+    }
     @FXML
     private void openDirectory() {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Choose Start Directory");
-        File defaultDirectory = mainApp.getLastAccess();
-        chooser.setInitialDirectory(defaultDirectory);
-        File selectedDirectory = chooser.showDialog(primaryStage);
+        File selectedDirectory = TagUtil.openDir(mainApp);
 
         if (selectedDirectory != null) {
             mainApp.setLastAccess(selectedDirectory);
@@ -197,5 +250,25 @@ public class FileOverviewController {
     @FXML
     private void clearText() {
         searchField.setText("");
+    }
+
+    public MainApp getMainApp() {
+        return mainApp;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        try {
+
+            if (editable) {
+                actionMenu.setText("Admin");
+            }else {
+                actionMenu.setText("Artist");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

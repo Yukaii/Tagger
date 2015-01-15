@@ -36,52 +36,41 @@ import java.util.EventListener;
  */
 public class MainApp extends Application {
 
-    private Stage primarySage;
+    private Stage primaryStage;
+    private Stage loginStage;
+
     private BorderPane rootLayout;
     private ObservableList<FileInfo> fileInfos = FXCollections.observableArrayList();
     private File lastAccess;
+    private boolean editable;
 
-    LoginViewController loginViewController;
+
+//    LoginViewController loginViewController;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.primarySage = primaryStage;
-        this.primarySage.setTitle("Tagger");
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("Tagger");
+
+        //this.primaryStage.hide();
+
+//        this.primaryStage.setOnCloseRequest(new javafx.event.EventHandler<javafx.stage.WindowEvent>() {
+//            @Override
+//            public void handle(javafx.stage.WindowEvent event) {
+//                primaryStage.close();
+//                showLoginView();
+//                showFileOverview(true);
+//            }
+//        });
 
         showLoginView();
-        firstLoadFiles();
-
-        showFileOverview();
-        this.primarySage.hide();
-
-        this.primarySage.setOnCloseRequest(new javafx.event.EventHandler<javafx.stage.WindowEvent>() {
-            @Override
-            public void handle(javafx.stage.WindowEvent event) {
-                primaryStage.hide();
-                showLoginView();
-            }
-        });
-
-    }
-    public void firstLoadFiles() {
-        this.lastAccess = new File(System.getProperty("user.home"), "Desktop");
-        Collection<File> files = TagUtil.scanFile(this.lastAccess);
-        ArrayList<FileInfo> filelist = new ArrayList<FileInfo>();
-
-        for (File file : files) {
-            filelist.add(new FileInfo(file));
-        }
-        try {
-            fileInfos = DaoManager.loadFiles(filelist);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
+        showFileOverview(false);
 
     }
 
+    public void showFileOverview(Boolean chooseDefault) {
+        loginStage.close();
 
-    public void showFileOverview() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/FileOverview.fxml"));
@@ -90,14 +79,29 @@ public class MainApp extends Application {
             FileOverviewController fileOverviewController = loader.getController();
 
             fileOverviewController.setMainApp(this);
-            fileOverviewController.setPrimaryStage(this.primarySage);
+            fileOverviewController.setPrimaryStage(this.primaryStage);
+            fileOverviewController.setEditable(editable);
 
             Scene scene = new Scene(fileOverview);
-            primarySage.setScene(scene);
-            primarySage.setResizable(false);
-            primarySage.show();
+            primaryStage.setScene(scene);
+            primaryStage.centerOnScreen();
+            primaryStage.setResizable(false);
+            primaryStage.show();
+            firstLoadFiles(chooseDefault);
+            fileOverviewController.setTableItems();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void firstLoadFiles(boolean chooseDefault) {
+        this.lastAccess = new File(System.getProperty("user.home"), "Desktop");
+
+        try {
+            fileInfos = TagUtil.openDirectory(this, chooseDefault);
+        }
+        catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -105,22 +109,23 @@ public class MainApp extends Application {
 
     public void showLoginView() {
         try {
-            Stage sa = new Stage();
-            sa.setTitle("Login");
+            loginStage = new Stage();
+            loginStage.setTitle("Login");
             FXMLLoader l = new FXMLLoader();
             l.setLocation(MainApp.class.getResource("view/login.fxml"));
             AnchorPane login = (AnchorPane) l.load();
 
             // add controller
-            this.loginViewController = l.getController();
-            this.loginViewController.setMainApp(this);
-            this.loginViewController.setPrimaryStage(this.primarySage);
+            LoginViewController loginViewController = l.getController();
+            loginViewController.setMainApp(this);
+            loginViewController.setPrimaryStage(this.primaryStage);
             //
 
             Scene s = new Scene(login);
-            sa.setResizable(false);
-            sa.setScene(s);
-            sa.show();
+            loginStage.setResizable(false);
+            loginStage.setScene(s);
+            loginStage.centerOnScreen();
+            loginStage.showAndWait();
 
         } catch (IOException ee) {
             ee.printStackTrace();
@@ -138,5 +143,13 @@ public class MainApp extends Application {
 
     public File getLastAccess() {
         return lastAccess;
+    }
+
+    public Stage getPrimarySage() {
+        return primaryStage;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 }

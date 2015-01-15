@@ -22,10 +22,11 @@ import java.util.List;
  * Created by yukai on 2015/1/14.
  */
 public class DaoManager extends com.j256.ormlite.dao.DaoManager {
+    private static final String DbUrl = "jdbc:sqlite:test.db";
 
     public static void saveFiles(Collection<File> fs) throws SQLException{
         JdbcPooledConnectionSource connectionSource =
-                new JdbcPooledConnectionSource("jdbc:sqlite:test.db");
+                new JdbcPooledConnectionSource(DbUrl);
         try {
             TableUtils.createTable(connectionSource, FileInfo.class);
         }
@@ -39,7 +40,7 @@ public class DaoManager extends com.j256.ormlite.dao.DaoManager {
 
     public static void saveFileInfo(FileInfo fileInfo) throws SQLException{
         JdbcPooledConnectionSource connectionSource =
-                new JdbcPooledConnectionSource("jdbc:sqlite:test.db");
+                new JdbcPooledConnectionSource(DbUrl);
 
         FileDao fileDao = new FileDao(connectionSource);
 
@@ -52,9 +53,17 @@ public class DaoManager extends com.j256.ormlite.dao.DaoManager {
         connectionSource.close();
     }
 
+    public static void resetDatabase() throws SQLException{
+        JdbcPooledConnectionSource connectionSource =
+                new JdbcPooledConnectionSource(DbUrl);
+
+        TableUtils.dropTable(connectionSource, FileInfo.class, true);
+
+    }
+
     public static ObservableList<FileInfo> loadFiles(ArrayList<FileInfo> filelist) throws SQLException{
         JdbcPooledConnectionSource connectionSource =
-                new JdbcPooledConnectionSource("jdbc:sqlite:test.db");
+                new JdbcPooledConnectionSource(DbUrl);
         try {
             TableUtils.createTable(connectionSource, FileInfo.class);
         }

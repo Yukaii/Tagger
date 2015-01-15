@@ -62,15 +62,28 @@ public class LoginViewController {
             @Override
             public void handle(MouseEvent event) {
                 if (event.getClickCount() != 0)
-                    if (username.getText().toString().equals("hello") && password.getText().equals(""))
+                    if (username.getText().toString().equals("admin") && password.getText().equals("0000"))
                     {
+                        mainApp.setEditable(true);
                         islog = true;
                         Stage s = (Stage) loginButton.getScene().getWindow();
                         s.close();
                         primaryStage.show();
-                    } else {
+                    }else if (username.getText().toString().equals("user") && password.getText().equals("0000")) {
+                        mainApp.setEditable(false);
+                        islog = true;
+                        Stage s = (Stage) loginButton.getScene().getWindow();
+                        s.close();
+                        primaryStage.show();
+                    }
+                    else {
 //                        showStage();
-                        alert();
+//                        alert();
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Error: username or password not Found");
+                        alert.showAndWait();
                     }
             }
         });
