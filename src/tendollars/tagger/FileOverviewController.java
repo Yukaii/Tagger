@@ -182,12 +182,17 @@ public class FileOverviewController {
             mainApp.setLastAccess(selectedDirectory);
 
             Collection<File> files = TagUtil.scanFile(selectedDirectory);
-            ObservableList<FileInfo> fileInfos = FXCollections.observableArrayList();
-            for (File file : files) {
-                fileInfos.add(new FileInfo(file));
-            }
+            ArrayList<FileInfo> filelist = new ArrayList<FileInfo>();
+            for (File f : files) filelist.add(new FileInfo(f));
 
-            fileInfoTable.setItems(fileInfos);
+            ObservableList<FileInfo> fileInfos;
+            try {
+                fileInfos = DaoManager.loadFiles(filelist);
+                currentDirectoryFiles = fileInfos;
+                fileInfoTable.setItems(fileInfos);
+            }catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
     }
