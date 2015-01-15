@@ -62,8 +62,9 @@ public class FileOverviewController {
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
 
+        // Table initialize
         fileInfoTable.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> showFileTags(newValue)
+                (observable, oldValue, newValue) -> {showFileTags(newValue);}
         );
 
         fileInfoTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -96,7 +97,9 @@ public class FileOverviewController {
 
             }
         });
+        fileInfoTable.setPlaceholder(new Label("沒有結果"));
 
+        // 一個隨打隨找的 style
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             searchBy(newValue);
         });
@@ -135,16 +138,12 @@ public class FileOverviewController {
 
         tagBox.getChildren().add(new Label(tags.size() + " tags"));
 
-
         for (String t : tags) {
             Button tagbtn = new Button(t);
             tagbtn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     StringBuilder strbuilder = new StringBuilder();
-//                    if (searchField.getText().equals("")) {
-//
-//                    }
                     strbuilder.append(searchField.getText());
                     strbuilder.append(tagbtn.getText()).append(" ");
                     searchField.setText(strbuilder.toString());
@@ -161,8 +160,6 @@ public class FileOverviewController {
 
         currentDirectoryFiles = mainApp.getFileInfos();
         fileInfoTable.setItems(currentDirectoryFiles);
-        fileInfoTable.setPlaceholder(new Label("沒有結果"));
-
     }
 
     public void setPrimaryStage(Stage stage) {
