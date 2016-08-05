@@ -171,7 +171,10 @@ public class FileOverviewController {
 
                 if (result.get() == ButtonType.OK) {
                     DaoManager.resetDatabase();
-                    fileInfoTable.setItems(TagUtil.openDirectory(mainApp, true));
+                    currentDirectoryFiles = TagUtil.openDirectory(mainApp, true);
+                    fileInfoTable.setItems(currentDirectoryFiles);
+                    mainApp.setFileInfos(currentDirectoryFiles);
+
 
                     Alert alert4 = new Alert(Alert.AlertType.INFORMATION);
                     alert4.setTitle("Delete Done!");

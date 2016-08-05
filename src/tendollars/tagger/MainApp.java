@@ -43,8 +43,6 @@ public class MainApp extends Application {
     private ObservableList<FileInfo> fileInfos = FXCollections.observableArrayList();
     private File lastAccess;
     private boolean editable;
-
-
 //    LoginViewController loginViewController;
 
     @Override
@@ -151,5 +149,9 @@ public class MainApp extends Application {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
+    }
+
+    public void setFileInfos(ObservableList<FileInfo> fileInfos) {
+        this.fileInfos = fileInfos;
     }
 }
